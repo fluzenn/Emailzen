@@ -1,0 +1,11 @@
+pyproject.toml
+src/main.py
+src/Emailzen.egg-info/PKG-INFO
+src/Emailzen.egg-info/SOURCES.txt
+src/Emailzen.egg-info/dependency_links.txt
+src/Emailzen.egg-info/requires.txt
+src/Emailzen.egg-info/top_level.txt
+src/services/auth.py
+src/services/gmail.py
+src/storage/local_db.py
+src/utils/safe_render.py

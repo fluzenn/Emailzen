@@ -1,0 +1,10 @@
+{
+    "_comment": "Configuration des icônes d'expéditeurs pour Emailzen. Ajoutez vos propres mappings ci-dessous.",
+    "_format": "clé = domaine ou mot-clé à chercher dans l'email, icon = nom de l'icône Material Design (ft.Icons.*), color = couleur Flet (ft.Colors.*)",
+    "custom_icons": {
+        "example.com": {
+            "icon": "BUSINESS",
+            "color": "BLUE_600"
+        }
+    }
+}

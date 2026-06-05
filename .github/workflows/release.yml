@@ -1,0 +1,68 @@
+name: Build and Release Emailzen
+
+on:
+  push:
+    tags:
+      - 'v*' # Se déclenche à chaque tag commençant par v (ex: v1.0.0)
+
+jobs:
+  release:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            output_path: build/linux
+            asset_name: emailzen-linux.tar.gz
+          - os: windows-latest
+            platform: windows
+            output_path: build\windows
+            asset_name: emailzen-windows.zip
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-level: '3.11'
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flet>=0.21.0 pillow keyring google-auth-oauthlib google-api-python-client
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install Linux Dependencies (Ubuntu only)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev mpv libmpv-dev
+
+      - name: Flet Build
+        run: |
+          flet build ${{ matrix.platform }}
+
+      - name: Archive Linux Build
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          tar -czf ${{ matrix.asset_name }} -C ${{ matrix.output_path }} .
+
+      - name: Archive Windows Build
+        if: matrix.os == 'windows-latest'
+        run: |
+          powershell Compress-Archive -Path ${{ matrix.output_path }}\* -DestinationPath ${{ matrix.asset_name }}
+
+      - name: Create GitHub Release and Upload Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.asset_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: Emailzen
+Version: 1.0.0
+Summary: A minimalist, open-source, AI built email client
+Author-email: Flet developer <you@example.com>
+Requires-Python: >=3.10
+Requires-Dist: flet
+Requires-Dist: google-auth>=2.20.0
+Requires-Dist: google-auth-oauthlib>=1.0.0
+Requires-Dist: google-api-python-client>=2.100.0
+Requires-Dist: keyring>=23.0.0
+Requires-Dist: httpx>=0.24.0

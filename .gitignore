@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ENV/
+
+# Emailzen Cache & Secrets
+mail_cache.db
+client_secret.json
+
+# Flet Build outputs
+build/
+dist/
