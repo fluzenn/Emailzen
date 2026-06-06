@@ -50,7 +50,7 @@ jobs:
 
       - name: Flet Build
         run: |
-          flet build ${{ matrix.platform }}
+          yes | flet build ${{ matrix.platform }}
 
       - name: Archive Linux Build
         if: matrix.os == 'ubuntu-latest'
