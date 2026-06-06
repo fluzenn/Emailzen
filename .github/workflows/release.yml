@@ -55,7 +55,7 @@ jobs:
       - name: Flet Build App
         shell: bash
         run: |
-          uv run flet build ${{ matrix.platform }} --yes --verbose
+          uv run flet build ${{ matrix.platform }} src --yes --verbose
 
       - name: Archive Linux Build
         if: matrix.platform == 'linux'
