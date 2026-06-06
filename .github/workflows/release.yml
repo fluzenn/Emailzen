@@ -4,12 +4,12 @@ on:
   push:
     tags:
       - 'v*' # Se déclenche à chaque tag de version (ex: v1.0.0)
-  workflow_dispatch: # Permet aussi de le lancer manuellement si besoin
+  workflow_dispatch: # Permet le lancement manuel depuis l'onglet Actions
 
 env:
-  UV_PYTHON: '3.11' # Version de Python cible pour uv
+  UV_PYTHON: '3.11' # Version cible pour uv
   PYTHONUTF8: 1
-  FLET_CLI_NO_RICH_OUTPUT: 1 # Évite les animations de texte cassées en CI/CD
+  FLET_CLI_NO_RICH_OUTPUT: 1 # Désactive les animations Rich text destructrices en CI/CD
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Supprime l'avertissement de dépréciation de Node.js 20
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
     name: Build for ${{ matrix.platform }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false # Évite qu'un échec sur un OS n'annule instantanément l'autre
+      fail-fast: false # Un échec sur un OS n'annule pas l'autre
       matrix:
         include:
           - os: ubuntu-latest
@@ -43,19 +43,16 @@ jobs:
         shell: bash
         run: |
           sudo apt update --allow-releaseinfo-change
-          sudo apt-get install -y --no-install-recommends \
-            clang ninja-build libgtk-3-dev libasound2-dev libmpv-dev mpv \
-            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev \
-            gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
-            gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 \
-            pkg-config libsecret-1-0 libsecret-1-dev
+          # Extraction dynamique des dépendances système comme recommandé dans la doc officielle :
+          LINUX_DEPS="$(uv run python -c 'from flet.utils.linux_deps import linux_dependencies; print(" ".join(linux_dependencies))')"
+          sudo apt-get install -y --no-install-recommends $LINUX_DEPS
           sudo apt-get clean
 
-      # Note: Le SDK Flutter est géré et téléchargé à la bonne version automatiquement par Flet grâce au flag --yes
       - name: Flet Build App
         shell: bash
         run: |
-          uv run flet build ${{ matrix.platform }} src --yes --verbose
+          # Utilisation explicite du dossier source 'src' et forçage de la destination via '--output'
+          uv run flet build ${{ matrix.platform }} src --output ${{ matrix.output_path }} --yes --verbose
 
       - name: Archive Linux Build
         if: matrix.platform == 'linux'
